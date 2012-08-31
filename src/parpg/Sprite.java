@@ -5,9 +5,11 @@ import java.awt.Graphics;
 import java.awt.Image;
 
 public class Sprite {
+	private String name;
 	private Image image;
 	
-	public Sprite(Image image) {
+	public Sprite(String name, Image image) {
+		this.name = name;
 		this.image = image;
 	}
 	

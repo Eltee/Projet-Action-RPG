@@ -2,6 +2,7 @@ package parpg;
 
 import java.awt.Graphics;
 import java.awt.Rectangle;
+import java.util.ArrayList;
 import java.util.Hashtable;
 
 public abstract class Entity {
@@ -16,8 +17,10 @@ public abstract class Entity {
 	private double delay;
 	private String state;
 	
-	public Entity(String sprite, int x, int y){
-		//this.sprite = SpriteStore.get().getSprite(ref);
+	public Entity(ArrayList<String> spritenames, int x, int y){
+		for(int i = 0; i < spritenames.size(); i++){
+			this.spriteset.put(spritenames.get(i), SpriteStore.get().getSprite(spritenames.get(i))); //Temporaire, permet d'avoir seulement une sprite dans le spriteset..
+		}
 		this.x = x;
 		this.y = y;	
 	}
