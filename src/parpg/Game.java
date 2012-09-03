@@ -31,20 +31,20 @@ public class Game extends Canvas {
 	//private boolean logicRequiredThisLoop = false;
 	/** Hashtable contenant la liste des donjons */
 	//private Hashtable dungeons;
-	/** The message to display which waiting for a key press */
 	private String message = "";
-	/** True if we're holding up game play until a key has been pressed */
 	private boolean waitingForKeyPress = true;
+	private int resX = 640;
+	private int resY = 480;
 	
 	public Game() {
 
 		JFrame container = new JFrame("Projet Action-RPG");
 
 		JPanel panel = (JPanel) container.getContentPane();
-		panel.setPreferredSize(new Dimension(800,600));
+		panel.setPreferredSize(new Dimension(resX,resY));
 		panel.setLayout(null);
 
-		setBounds(0,0,800,600);
+		setBounds(0,0,resX,resY);
 		panel.add(this);
 	
 		// Ignore le repaint automatique; sera fait manuellement
@@ -73,7 +73,9 @@ public class Game extends Canvas {
 	}
 	
 	private void init() {
-		
+		//this.resX = 800;
+		//this.resY = 600;
+		//this.getParent().getParent().setPreferredSize(new Dimension(resX,resY));
 	}
 	
 	public void worldStep() {
@@ -89,17 +91,17 @@ public class Game extends Canvas {
 
 			Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
 			g.setColor(Color.black);
-			g.fillRect(0,0,800,600);
+			g.fillRect(0,0,resX,resY);
 			
 			if (waitingForKeyPress) {
 				g.setColor(Color.white);
-				g.drawString(message,(800-g.getFontMetrics().stringWidth(message))/2,250);
-				g.drawString("Press any key",(800-g.getFontMetrics().stringWidth("Press any key"))/2,300);
+				g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
+				g.drawString("Press any key",(resX-g.getFontMetrics().stringWidth("Press any key"))/2,resY-(resY/4));
 			}
 			else {
 				g.setColor(Color.white);
-				g.drawString(message,(800-g.getFontMetrics().stringWidth(message))/2,250);
-				g.drawString("Or don't ;)",(800-g.getFontMetrics().stringWidth("Or don't ;)"))/2,300);
+				g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
+				g.drawString("Or don't ;)",(resX-g.getFontMetrics().stringWidth("Or don't ;)"))/2,resY-(resY/4));
 			}
 			
 			// On se debarasse du Graphics2D pour liberer les ressources 
