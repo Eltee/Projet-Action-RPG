@@ -3,14 +3,16 @@ package parpg;
 import java.io.FileOutputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
+import java.util.ArrayList;
  
 public class Serializer {
  
    public static void main (String args[]) {
  
 	   Serializer serializer = new Serializer();
-	   Tileset tileset = new Tileset(null, null);
-	   serializer.serializeTileset(tileset);
+	   ArrayList empty = new ArrayList();
+	   //Tileset tileset = new Tileset("dog", empty);
+	   //serializer.serializeTileset(tileset);
    }
  
    public void serializeTileset(Tileset tileset){

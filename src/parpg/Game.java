@@ -9,6 +9,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
@@ -17,20 +18,21 @@ import javax.swing.JPanel;
 
 public class Game extends Canvas {
 	
-	/** Stratégie graphique qui améliore la vitesse d'affichage */
+	/** Stratï¿½gie graphique qui amï¿½liore la vitesse d'affichage */
 	private BufferStrategy strategy;
-	/** Dénote si le jeu est en marche */
+	/** Dï¿½note si le jeu est en marche */
 	private boolean gameRunning = true;
-	/** Liste des entités active */
+	/** Liste des entitï¿½s active */
 	//private ArrayList entities = new ArrayList();
-	/** Liste des entités à enlever */
+	/** Liste des entitï¿½s ï¿½ enlever */
 	//private ArrayList removeList = new ArrayList();
-	/** L'entité du joueur */
+	/** L'entitï¿½ du joueur */
 	//private Entity player;
 	/** Booleen si le loop doit faire quelque chose de particulier cette fois-ci */
 	//private boolean logicRequiredThisLoop = false;
 	/** Hashtable contenant la liste des donjons */
 	//private Hashtable dungeons;
+	private Hashtable<String, Tileset> tilesets = new Hashtable<String,Tileset>();
 	private String message = "";
 	private boolean waitingForKeyPress = true;
 	private int resX = 640;
@@ -61,7 +63,7 @@ public class Game extends Canvas {
 			}
 		});
 		
-		// Le système de contrôles
+		// Le systï¿½me de contrï¿½les
 
 		addKeyListener(new KeyInputHandler());
 
@@ -72,10 +74,23 @@ public class Game extends Canvas {
 		
 	}
 	
-	private void init() {
-		//this.resX = 800;
-		//this.resY = 600;
-		//this.getParent().getParent().setPreferredSize(new Dimension(resX,resY));
+	private void init() { //En ce moment, ne fait que loader les tilesets (noms de tuiles, references URL)
+		File dir = new File("Ressources/Tilesets");
+		File[] children = dir.listFiles();
+		if (children == null) {
+			fail("Impossible de trouver le dossier");
+		} 
+		else if(children.length == 0){
+			fail("Aucun dossier tileset prÃ©sent.");
+		}
+		else {
+		    for (int i=0; i<children.length; i++) {
+		    	if(children[i].isDirectory()){
+			    	Tileset tempo = new Tileset(children[i].getName());
+			    	tilesets.put(children[i].getName(), tempo);
+		    	}
+		    }
+		}
 	}
 	
 	public void worldStep() {
@@ -84,7 +99,7 @@ public class Game extends Canvas {
 
 		while (gameRunning) {
 
-			//Le delta sert à calculer le temps entre les steps
+			//Le delta sert ï¿½ calculer le temps entre les steps
 			
 			long delta = System.currentTimeMillis() - lastStepTime;
 			lastStepTime = System.currentTimeMillis();
@@ -99,9 +114,17 @@ public class Game extends Canvas {
 				g.drawString("Press any key",(resX-g.getFontMetrics().stringWidth("Press any key"))/2,resY-(resY/4));
 			}
 			else {
-				g.setColor(Color.white);
-				g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
-				g.drawString("Or don't ;)",(resX-g.getFontMetrics().stringWidth("Or don't ;)"))/2,resY-(resY/4));
+				if(tilesets.size() > 0){
+					g.setColor(Color.white);
+					g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
+					g.drawString("Number of tilesets loaded: " + tilesets.size(),(resX-g.getFontMetrics().stringWidth("Number of tilesets loaded: " + tilesets.size()))/2,resY-(resY/4));
+				}
+				else{
+					g.setColor(Color.white);
+					g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
+					g.drawString("Or don't ;)",(resX-g.getFontMetrics().stringWidth("Or don't ;)"))/2,resY-(resY/4));
+				}
+				
 			}
 			
 			// On se debarasse du Graphics2D pour liberer les ressources 
@@ -109,7 +132,7 @@ public class Game extends Canvas {
 			g.dispose();
 			strategy.show();
 			
-			// Délai entre chaque step; en théorie le délai devrait faire fonctionner le jeu a 100 FPS.
+			// Dï¿½lai entre chaque step; en thï¿½orie le dï¿½lai devrait faire fonctionner le jeu a 100 FPS.
 
 			try { 
 				Thread.sleep(10); 
@@ -142,8 +165,8 @@ public class Game extends Canvas {
 			if (waitingForKeyPress) {
 				if (pressCount == 1) {
 					waitingForKeyPress = false;
-					init();
 					pressCount = 0;
+					init();
 				} 
 				else {
 					pressCount++;
@@ -154,6 +177,11 @@ public class Game extends Canvas {
 				System.exit(0);
 			}
 		}
+	}
+	
+	private void fail(String message) { 
+		System.err.println(message);
+		System.exit(0);
 	}
 	
 	public static void main(String[] args) {

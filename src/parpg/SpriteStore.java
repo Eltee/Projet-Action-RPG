@@ -55,6 +55,24 @@ public class SpriteStore {
 		return sprite;
 	}
 	
+	public void storeSprite(String key, BufferedImage sourceImage){
+		//Deja loadée
+		if (sprites.get(key) != null) {
+			System.out.println("Deja existant.");
+		}
+		else{
+			// On créer une image accelerée de la bonne taille
+			GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
+			Image image = gc.createCompatibleImage(sourceImage.getWidth(),sourceImage.getHeight(),Transparency.BITMASK);
+			image.getGraphics().drawImage(sourceImage,0,0,null);
+					
+			// On l'ajoute au buffer
+			Sprite sprite = new Sprite(key, image);
+			sprites.put(key,sprite);
+		}
+		
+	}
+	
 	// Si il y a erreur, quitter le jeu.
 	private void fail(String message) { 
 		System.err.println(message);
