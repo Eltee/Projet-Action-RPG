@@ -35,14 +35,17 @@ public class Game extends Canvas {
 	private Hashtable<String, Tileset> tilesets = new Hashtable<String,Tileset>();
 	private String message = "";
 	private boolean waitingForKeyPress = true;
-	private int resX = 640;
-	private int resY = 480;
+	private int resX = 1024;
+	private int resY = 768;
+	private JFrame container;
+	private JPanel panel;
+	private Room testRoom;
 	
 	public Game() {
 
-		JFrame container = new JFrame("Projet Action-RPG");
+		container = new JFrame("Projet Action-RPG");
 
-		JPanel panel = (JPanel) container.getContentPane();
+		panel = (JPanel) container.getContentPane();
 		panel.setPreferredSize(new Dimension(resX,resY));
 		panel.setLayout(null);
 
@@ -75,7 +78,7 @@ public class Game extends Canvas {
 	}
 	
 	private void init() { //En ce moment, ne fait que loader les tilesets (noms de tuiles, references URL)
-		File dir = new File("Ressources/Tilesets");
+		File dir = new File("bin/Ressources/Tilesets");
 		File[] children = dir.listFiles();
 		if (children == null) {
 			fail("Impossible de trouver le dossier");
@@ -91,7 +94,16 @@ public class Game extends Canvas {
 		    	}
 		    }
 		}
+		testRoom = new Room("Test", tilesets.get("Default"));
 	}
+	
+	/*private void changeRes(int resX, int resY){
+		this.resX = resX;
+		this.resY = resY;
+		panel.setPreferredSize(new Dimension(resX,resY));
+		setBounds(0,0,resX,resY);
+		container.pack();
+	}*/
 	
 	public void worldStep() {
 		
@@ -106,14 +118,17 @@ public class Game extends Canvas {
 
 			Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
 			g.setColor(Color.black);
-			g.fillRect(0,0,resX,resY);
+			g.fillRect(0, 0, resX, resY);
+			
+			g.setColor(Color.gray); //Margin top
+			g.fillRect(0, 0, resX, 96);
 			
 			if (waitingForKeyPress) {
 				g.setColor(Color.white);
 				g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
 				g.drawString("Press any key",(resX-g.getFontMetrics().stringWidth("Press any key"))/2,resY-(resY/4));
 			}
-			else {
+			/*else {
 				if(tilesets.size() > 0){
 					g.setColor(Color.white);
 					g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
@@ -125,6 +140,20 @@ public class Game extends Canvas {
 					g.drawString("Or don't ;)",(resX-g.getFontMetrics().stringWidth("Or don't ;)"))/2,resY-(resY/4));
 				}
 				
+			}*/
+			
+			if(testRoom != null){
+				testRoom.draw(g);
+			}
+			else{
+				g.setColor(Color.darkGray); //Murs top
+				g.fillRect(0, 96, resX, 64);
+				g.setColor(Color.darkGray); //Murs gauche
+				g.fillRect(0, 96, 64, resY);
+				g.setColor(Color.darkGray); //Murs droite
+				g.fillRect(960, 96, 64, resY);
+				g.setColor(Color.darkGray); //Murs bas
+				g.fillRect(0, 704, resX, 64);
 			}
 			
 			// On se debarasse du Graphics2D pour liberer les ressources 
@@ -166,6 +195,7 @@ public class Game extends Canvas {
 				if (pressCount == 1) {
 					waitingForKeyPress = false;
 					pressCount = 0;
+					//changeRes(1024,768);
 					init();
 				} 
 				else {
