@@ -6,7 +6,7 @@ import java.util.Hashtable;
 
 public class Tileset{
 	private String name;
-	private Hashtable<String, Sprite> tileset = new Hashtable(); //Key(nom), URL
+	private Hashtable<String, Sprite> tileset = new Hashtable<String, Sprite>(); //Key(nom), URL
 	
 	public Tileset(String name){
 		this.name = name;

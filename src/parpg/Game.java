@@ -29,9 +29,9 @@ public class Game extends Canvas {
 	/** L'entit� du joueur */
 	//private Entity player;
 	/** Booleen si le loop doit faire quelque chose de particulier cette fois-ci */
-	//private boolean logicRequiredThisLoop = false;
+	private boolean logicRequiredThisLoop = false;
 	/** Hashtable contenant la liste des donjons */
-	//private Hashtable dungeons;
+	//private Hashtable<String, Dungeon> dungeons = new Hashtable<String,Dungeon>();
 	private Hashtable<String, Tileset> tilesets = new Hashtable<String,Tileset>();
 	private String message = "";
 	private boolean waitingForKeyPress = true;
@@ -40,6 +40,12 @@ public class Game extends Canvas {
 	private JFrame container;
 	private JPanel panel;
 	private Room testRoom;
+	private PlayerEntity testPlayer;
+	
+	private boolean upPressed = false;
+	private boolean downPressed = false;
+	private boolean leftPressed = false;
+	private boolean rightPressed = false;
 	
 	public Game() {
 
@@ -78,6 +84,14 @@ public class Game extends Canvas {
 	}
 	
 	private void init() { //En ce moment, ne fait que loader les tilesets (noms de tuiles, references URL)
+		loadTilesets();
+		testRoom = new Room("Test", tilesets.get("Default"));
+		ArrayList<String> sprites = new ArrayList<String>();
+		sprites.add("playerFrontA.png");
+		testPlayer = new PlayerEntity(sprites, 200, 200);
+	}
+	
+	private void loadTilesets() {
 		File dir = new File("bin/Ressources/Tilesets");
 		File[] children = dir.listFiles();
 		if (children == null) {
@@ -94,7 +108,6 @@ public class Game extends Canvas {
 		    	}
 		    }
 		}
-		testRoom = new Room("Test", tilesets.get("Default"));
 	}
 	
 	/*private void changeRes(int resX, int resY){
@@ -145,6 +158,18 @@ public class Game extends Canvas {
 			if(testRoom != null){
 				testRoom.draw(g);
 			}
+			if(testPlayer != null){
+				if(upPressed)
+					testPlayer.setMoveY(-1);
+				else if(downPressed)
+					testPlayer.setMoveY(1);
+				else if(leftPressed)
+					testPlayer.setMoveX(-1);
+				else if(rightPressed)
+					testPlayer.setMoveX(1);
+				testPlayer.move(delta);
+				testPlayer.draw(g);
+			}
 			else{
 				g.setColor(Color.darkGray); //Murs top
 				g.fillRect(0, 96, resX, 64);
@@ -180,12 +205,40 @@ public class Game extends Canvas {
 			if (waitingForKeyPress) {
 				return;
 			}
+			else{
+				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+					leftPressed = true;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					rightPressed = true;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_UP) {
+					upPressed = true;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+					downPressed = true;
+				}
+			}
 		} 
 		
 		public void keyReleased(KeyEvent e) {
 			// On saute les keyReleased si on attend d'appuyer sur un bouton
 			if (waitingForKeyPress) {
 				return;
+			}
+			else{
+				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+					leftPressed = false;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					rightPressed = false;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_UP) {
+					upPressed = false;
+				}
+				if (e.getKeyCode() == KeyEvent.VK_DOWN) {
+					downPressed = false;
+				}
 			}
 		}
 

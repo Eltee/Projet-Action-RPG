@@ -6,9 +6,9 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 
 public abstract class Entity {
-	private int x;
-	private int y;
-	private Hashtable<String, Sprite> spriteset;
+	protected int x;
+	protected int y;
+	protected Hashtable<String, Sprite> spriteset = new Hashtable<String, Sprite>();
 	private double dx;
 	private double dy;
 	private Rectangle hitbox;
@@ -17,9 +17,9 @@ public abstract class Entity {
 	private double delay;
 	private String state;
 	
-	public Entity(ArrayList<String> spritenames, int x, int y){
+	public Entity(ArrayList<String> spritenames, String folder, int x, int y){
 		for(int i = 0; i < spritenames.size(); i++){
-			this.spriteset.put(spritenames.get(i), SpriteStore.get().getSprite(spritenames.get(i))); //Temporaire, permet d'avoir seulement une sprite dans le spriteset..
+			this.spriteset.put(spritenames.get(i).substring(0,spritenames.get(i).length()-4), SpriteStore.get().getSprite(folder + spritenames.get(i)));
 		}
 		this.x = x;
 		this.y = y;	
