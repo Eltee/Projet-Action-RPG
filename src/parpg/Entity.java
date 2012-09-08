@@ -9,9 +9,7 @@ public abstract class Entity {
 	protected int x;
 	protected int y;
 	protected Hashtable<String, Sprite> spriteset = new Hashtable<String, Sprite>();
-	private double dx;
-	private double dy;
-	private Rectangle hitbox;
+	protected Rectangle hitbox;
 	private Rectangle compareHitbox;
 	private boolean respawn;
 	private double delay;
@@ -25,31 +23,11 @@ public abstract class Entity {
 		this.y = y;	
 	}
 	
-	public void move(long delta) {
+	//public void move(long delta) {
 		// Déplace l'entité en tenant compte du delta (timing du worldStep)
-		x += (delta * dx) / 1000;
-		y += (delta * dy) / 1000;
-	}
-	
-	public void setMoveX(double dx) {
-		this.dx = dx;
-	}
-
-	public void setMoveY(double dy) {
-		this.dy = dy;
-	}
-	
-	public double getMoveX() {
-		return dx;
-	}
-
-	public double getMoveY() {
-		return dy;
-	}
-	
-	public void draw(Graphics g) {
-		//spriteset.get(state).draw(g,(int) x,(int) y);
-	}
+		//x += (delta * dx) / 1000;
+		//y += (delta * dy) / 1000;
+	//}
 	
 	public int getX() {
 		return x;
@@ -67,5 +45,9 @@ public abstract class Entity {
 	}
 	
 	public abstract void collidedWith(Entity other);
+	
+	public abstract void draw(Graphics g);
+	
+	public abstract void step(long delta, int[][] tileMatrix);
 	
 }

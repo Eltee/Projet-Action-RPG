@@ -1,94 +1,109 @@
 package parpg;
 
 import java.awt.Graphics;
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 public class Room {
 	private String name;
 	//Taille différentes peut-etre un jour, mais pour l'instant les salles seront toutes 25x20 cases entourées de murs.
-	private int width = 28;
-	private int height = 17;
+	private int width;
+	private int height;
 	//private Floor master; //L'étage dont la salle fait partie
-	private int[][] tileMatrix = new int[width][height]; //La map comme tel
+	private int[][] tileMatrix; //La map comme tel
+	/*
+	 0 = Bloc
+	 1 = Plancher
+	 2 = Eau
+	 3 = Eau avec top
+	 4 = Mur haut B
+	 5 = Mur haut T
+	 6 = Mur bas B
+	 7 = Mur bas T
+	 8 = Mur gauche L
+	 9 = Mur gauche R
+	 10 = Mur droit L
+	 11 = Mur droit R
+	 12 = Coin bas-gauche BL
+	 13 = Coin bas-gauche BR
+	 14 = Coin bas-gauche TL
+	 15 = Coin bas-gauche TR
+	 16 = Coin bas-droit BL
+	 17 = Coin bas-droit BR
+	 18 = Coin bas-droit TL
+	 19 = Coin bas-droit TR
+	 20 = Coin haut-gauche TR
+	 21 = Coin haut-gauche BR
+	 22 = Coin haut-gauche TL
+	 23 = Coin haut-gauche BL
+	 24 = Coin haut-droit BL
+	 25 = Coin haut-droit BR
+	 26 = Coin haut-droit TL
+	 27 = Coin haut-droit BL
+	 */
 	//private ArrayList spawnList; //La liste d'entitées à spawner dans la salle
 	private Tileset tileset;
 	
 	//Constructeur par défaut, salle vide. (Pour le test, la salle ne sera pas juste vide.)
-	public Room(String name, Tileset tileset){ 
+	public Room(String name, Tileset tileset, int width, int height){ 
+		if(width > 32)
+			this.width = 32;
+		else if(width < 5)
+			this.width = 5;
+		else
+			this.width = width;
+		if(height > 21)
+			this.height = 21;
+		else if(height < 5)
+			this.height = 5;
+		else
+			this.height = height;
+		
 		this.name = name;
 		this.tileset = tileset;
+		this.tileMatrix = new int[height][width];
+		
 		for(int i=0; i<width; i++){
 			for(int j=0; j<height; j++){
-				tileMatrix[i][j] = 0;
+				tileMatrix[i][j] = 1;
 			}
-		}
-		tileMatrix[12][4] = 11;
-		tileMatrix[12][5] = 10;
-		tileMatrix[12][6] = 10;
-		tileMatrix[15][5] = 11;
-		tileMatrix[14][5] = 11;
-		tileMatrix[13][5] = 11;
-		tileMatrix[15][6] = 10;
-		tileMatrix[14][6] = 10;
-		tileMatrix[13][6] = 10;
-		tileMatrix[13][7] = 10;
-		
-		tileMatrix[5][12] = 9;
-		tileMatrix[3][16] = 9;
-		tileMatrix[21][4] = 9;
-		tileMatrix[26][3] = 9;
-		tileMatrix[10][10] = 9;
-		
+		}		
 	}
 	
 	//Constructeur qui passe une matrice
 	public Room(String name, Tileset tileset, int[][] tileMatrix){ 
 		this.name = name;
 		this.tileset = tileset;
+		if(tileMatrix.length < 4 || tileMatrix.length > 32)
+			fail("Salle trop grande ou trop petite horizontalement.");
+		if(tileMatrix[0].length < 4 || tileMatrix[0].length > 21)
+			fail("Salle trop grande ou trop petite verticalement.");
+		this.width = tileMatrix[0].length;
+		this.height = tileMatrix.length;
 		this.tileMatrix = tileMatrix;
+	}
+	
+	public int[][] getTileMatrix() {
+		return tileMatrix;
 	}
 
 	public void draw(Graphics g){
-		int top = 160;
-		int left = 64;
-		
-		//Murs haut
-		for(int i=0; i<width; i++){
-			tileset.draw(g, 1, left+(i*32), top-64);
-		}
-		
-		//Murs bas
-		for(int i=0; i<width; i++){
-			tileset.draw(g, 3, left+(i*32), 704);
-		}
-		
-		//Murs gauche
-		for(int i=0; i<height; i++){
-				tileset.draw(g, 2, 0, top+(i*32));
-		}
-		
-		//Murs droite
-		for(int i=0; i<height; i++){
-				tileset.draw(g, 4, 960, top+(i*32));
-		}
-		
-		//Coin haut-gauche
-		tileset.draw(g, 5, 0, top-64);
-		
-		//Coin haut-droite
-		tileset.draw(g, 7, 960, top-64);
-		
-		//Coin bas-gauche
-		tileset.draw(g, 6, 0, 704);
-		
-		//Coin bas-droite
-		tileset.draw(g, 8, 960, 704);
+		int top = 96 + (32 * (21 - height) / 2);
+		int left = 0 + (32 * (32 - width) / 2);
 		
 		//Tuiles
-		for(int i=0; i<width; i++){
-			for(int j=0; j<height; j++){
-				tileset.draw(g, tileMatrix[i][j], left+(i*32), top+(j*32));
+		for(int i=0; i<height; i++){
+			for(int j=0; j<width; j++){
+				tileset.draw(g, "" + tileMatrix[i][j], left+(j*32), top+(i*32));
 			}
 		}
+	}
+	
+	private void fail(String message) { 
+		System.err.println(message);
+		System.exit(0);
 	}
 }

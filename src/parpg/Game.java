@@ -85,10 +85,22 @@ public class Game extends Canvas {
 	
 	private void init() { //En ce moment, ne fait que loader les tilesets (noms de tuiles, references URL)
 		loadTilesets();
-		testRoom = new Room("Test", tilesets.get("Default"));
+		int testArray[][] = 
+			{ {22,23,5,5,5,5,5,5,5,5,5,5,5,5,5,5,26,27},
+              {20,21,4,4,4,4,4,4,4,4,4,4,4,4,4,4,24,25},
+              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
+              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
+              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
+              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
+              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
+              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
+              {14,15,7,7,7,7,7,7,7,7,7,7,7,7,7,7,18,19},
+              {12,13,6,6,6,6,6,6,6,6,6,6,6,6,6,6,16,17}
+		    };
+		testRoom = new Room("Test", tilesets.get("Default"), testArray);
 		ArrayList<String> sprites = new ArrayList<String>();
 		sprites.add("playerFrontA.png");
-		testPlayer = new PlayerEntity(sprites, 200, 200);
+		testPlayer = new PlayerEntity(sprites, 300, 200, 2.0, 0.5);
 	}
 	
 	private void loadTilesets() {
@@ -160,26 +172,17 @@ public class Game extends Canvas {
 			}
 			if(testPlayer != null){
 				if(upPressed)
-					testPlayer.setMoveY(-1);
-				else if(downPressed)
-					testPlayer.setMoveY(1);
-				else if(leftPressed)
-					testPlayer.setMoveX(-1);
-				else if(rightPressed)
-					testPlayer.setMoveX(1);
-				testPlayer.move(delta);
+					testPlayer.moveY("up");
+				if(downPressed)
+					testPlayer.moveY("down");
+				if(leftPressed)
+					testPlayer.moveX("left");
+				if(rightPressed)
+					testPlayer.moveX("right");
+				testPlayer.step(delta, testRoom.getTileMatrix());
 				testPlayer.draw(g);
 			}
-			else{
-				g.setColor(Color.darkGray); //Murs top
-				g.fillRect(0, 96, resX, 64);
-				g.setColor(Color.darkGray); //Murs gauche
-				g.fillRect(0, 96, 64, resY);
-				g.setColor(Color.darkGray); //Murs droite
-				g.fillRect(960, 96, 64, resY);
-				g.setColor(Color.darkGray); //Murs bas
-				g.fillRect(0, 704, resX, 64);
-			}
+			
 			
 			// On se debarasse du Graphics2D pour liberer les ressources 
 
