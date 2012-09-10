@@ -44,8 +44,8 @@ public class PlayerEntity extends Entity {
 	
 	public void draw(Graphics g){
 		this.spriteset.get("playerFrontA").draw(g, x, y);
-		//g.setColor(Color.RED); Pour dessiner son hitbox..
-		//g.fillRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+		g.setColor(Color.RED); //Pour dessiner son hitbox..
+		g.fillRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
 	}
 	
 	public void moveX(String side){
@@ -99,19 +99,19 @@ public class PlayerEntity extends Entity {
 	}
 	
 	public void move(long delta, int[][] tileMatrix){
-		
+
 		System.out.println(mapCollisions(x + ((delta/10) * velX), y + ((delta/10) * velY), tileMatrix));
-		
+
 		if(velX > 0){ 
 			x += ((delta/10) * velX);
-			
+
 			if((velX - (speed / 4 )) > 0){ 
 				velX -= (speed / 4 );
 			}
 			else{ 
 				velX = 0;
 			}
-			
+
 		}
 		else if(velX < 0){ 
 			x += ((delta/10) * velX);
@@ -123,10 +123,10 @@ public class PlayerEntity extends Entity {
 				velX = 0;
 			}
 		}
-		
+
 		if(this.velY > 0){ 
 			y += ((delta/10) * velY);
-			
+
 			if((velY - (speed / 4 )) > 0){ 
 				velY -= (speed / 4 );
 			}
@@ -151,10 +151,10 @@ public class PlayerEntity extends Entity {
 	}
 	
 	public boolean mapCollisions(double dx, double dy, int[][] tileMatrix){
-		
+
 		int top = 96 + (32 * (21 - tileMatrix.length) / 2);
 		int left = 0 + (32 * (32 - tileMatrix[0].length) / 2);
-		
+
 		//System.out.println("Case X: " + Math.round((dx / 32) - (left / 32)) + "  Case Y: " + Math.round((dy / 32) - (top / 32)) );
 		try{
 			if(tileMatrix[(int) Math.round((dy / 32) - (top / 32))][(int) Math.round((dx / 32) - (left / 32))] != 1)
@@ -165,7 +165,7 @@ public class PlayerEntity extends Entity {
 		catch(ArrayIndexOutOfBoundsException e){
 			return true;
 		}
-		
+
 	}
 	
 	public void step(long delta, int[][] tileMatrix){

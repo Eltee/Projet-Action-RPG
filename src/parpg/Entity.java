@@ -9,13 +9,25 @@ public abstract class Entity {
 	protected int x;
 	protected int y;
 	protected Hashtable<String, Sprite> spriteset = new Hashtable<String, Sprite>();
+	protected Sprite sprite;
 	protected Rectangle hitbox;
 	private Rectangle compareHitbox;
 	private boolean respawn;
 	private double delay;
 	private String state;
 	
-	public Entity(ArrayList<String> spritenames, String folder, int x, int y){
+	public Entity(int x, int y){ //Constructeur sans sprite
+		this.x = x;
+		this.y = y;	
+	}
+	
+	public Entity(String sprite, String folder, int x, int y){ //Constructeur avec une seule sprite
+		this.sprite = SpriteStore.get().getSprite(folder + sprite);
+		this.x = x;
+		this.y = y;	
+	}
+	
+	public Entity(ArrayList<String> spritenames, String folder, int x, int y){ //Constructeur avec plusieurs sprites
 		for(int i = 0; i < spritenames.size(); i++){
 			this.spriteset.put(spritenames.get(i).substring(0,spritenames.get(i).length()-4), SpriteStore.get().getSprite(folder + spritenames.get(i)));
 		}

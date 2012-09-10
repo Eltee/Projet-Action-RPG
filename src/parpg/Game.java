@@ -18,30 +18,37 @@ import javax.swing.JPanel;
 
 public class Game extends Canvas {
 	
-	/** Stratï¿½gie graphique qui amï¿½liore la vitesse d'affichage */
+	/** Stratégie graphique qui améliore la vitesse d'affichage */
 	private BufferStrategy strategy;
-	/** Dï¿½note si le jeu est en marche */
+	/** Dénote si le jeu est en marche */
 	private boolean gameRunning = true;
-	/** Liste des entitï¿½s active */
-	//private ArrayList entities = new ArrayList();
-	/** Liste des entitï¿½s ï¿½ enlever */
-	//private ArrayList removeList = new ArrayList();
-	/** L'entitï¿½ du joueur */
-	//private Entity player;
+	/** Liste des entités active */
+	//private ArrayList<Entity> entities = new ArrayList<Entity>();
+	/** Liste des entités enlever */
+	private Hashtable<String, Entity> removeList = new Hashtable<String, Entity>();
+	/** L'entité du joueur */
+	private PlayerEntity player;
 	/** Booleen si le loop doit faire quelque chose de particulier cette fois-ci */
 	private boolean logicRequiredThisLoop = false;
 	/** Hashtable contenant la liste des donjons */
 	//private Hashtable<String, Dungeon> dungeons = new Hashtable<String,Dungeon>();
+	/** Hashtable contenant la liste des tilesets */
 	private Hashtable<String, Tileset> tilesets = new Hashtable<String,Tileset>();
-	private String message = "";
-	private boolean waitingForKeyPress = true;
+	/** Message à afficher */
+	private String message = "Press any key";
+	/** Résolution */
 	private int resX = 1024;
 	private int resY = 768;
+	/** Affichage */
 	private JFrame container;
 	private JPanel panel;
-	private Room testRoom;
-	private PlayerEntity testPlayer;
+	/** Variable d'état du jeu (permet de trier le worldStep) */
+	private String gameState = "Init";
 	
+	/** Variables de test */
+	private Room currentRoom;
+	
+	/** Variables de contrôles */
 	private boolean upPressed = false;
 	private boolean downPressed = false;
 	private boolean leftPressed = false;
@@ -88,19 +95,22 @@ public class Game extends Canvas {
 		int testArray[][] = 
 			{ {22,23,5,5,5,5,5,5,5,5,5,5,5,5,5,5,26,27},
               {20,21,4,4,4,4,4,4,4,4,4,4,4,4,4,4,24,25},
-              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
-              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
-              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
-              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
-              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
-              {8,9,1,1,1,1,1,1,1,1,1,1,1,1,1,1,10,11},
+              {8,9,0,1,0,1,1,1,1,1,1,1,1,1,1,1,10,11},
+              {8,9,1,0,1,1,1,1,1,1,1,1,3,3,3,1,10,11},
+              {8,9,0,1,0,1,1,1,1,1,1,1,2,2,2,1,10,11},
+              {8,9,1,1,1,1,1,1,1,1,1,1,1,2,1,1,10,11},
+              {8,9,1,1,1,1,1,1,1,1,1,1,3,2,3,1,10,11},
+              {8,9,1,1,1,1,1,1,1,1,1,1,1,2,1,1,10,11},
               {14,15,7,7,7,7,7,7,7,7,7,7,7,7,7,7,18,19},
               {12,13,6,6,6,6,6,6,6,6,6,6,6,6,6,6,16,17}
 		    };
-		testRoom = new Room("Test", tilesets.get("Default"), testArray);
+		currentRoom = new Room("Test", tilesets.get("Default"), testArray);
+		int[] tile = {8,4};
+		int[] tempoXY = currentRoom.getTileXY(tile);
 		ArrayList<String> sprites = new ArrayList<String>();
 		sprites.add("playerFrontA.png");
-		testPlayer = new PlayerEntity(sprites, 300, 200, 2.0, 0.5);
+		player = new PlayerEntity(sprites, tempoXY[0], tempoXY[1], 2.0, 0.5);
+		gameState = "Ingame";
 	}
 	
 	private void loadTilesets() {
@@ -136,7 +146,7 @@ public class Game extends Canvas {
 
 		while (gameRunning) {
 
-			//Le delta sert ï¿½ calculer le temps entre les steps
+			//Le delta sert à calculer le temps entre les steps
 			
 			long delta = System.currentTimeMillis() - lastStepTime;
 			lastStepTime = System.currentTimeMillis();
@@ -145,43 +155,35 @@ public class Game extends Canvas {
 			g.setColor(Color.black);
 			g.fillRect(0, 0, resX, resY);
 			
-			g.setColor(Color.gray); //Margin top
-			g.fillRect(0, 0, resX, 96);
-			
-			if (waitingForKeyPress) {
+			if(gameState == "Init"){
 				g.setColor(Color.white);
 				g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
-				g.drawString("Press any key",(resX-g.getFontMetrics().stringWidth("Press any key"))/2,resY-(resY/4));
 			}
-			/*else {
-				if(tilesets.size() > 0){
-					g.setColor(Color.white);
-					g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
-					g.drawString("Number of tilesets loaded: " + tilesets.size(),(resX-g.getFontMetrics().stringWidth("Number of tilesets loaded: " + tilesets.size()))/2,resY-(resY/4));
-				}
-				else{
-					g.setColor(Color.white);
-					g.drawString(message,(resX-g.getFontMetrics().stringWidth(message))/2,resY-(resY/4));
-					g.drawString("Or don't ;)",(resX-g.getFontMetrics().stringWidth("Or don't ;)"))/2,resY-(resY/4));
+			else if(gameState == "Ingame"){
+				g.setColor(Color.gray); //Margin top
+				g.fillRect(0, 0, resX, 96);
+				
+				if(currentRoom != null){
+					currentRoom.draw(g);
 				}
 				
-			}*/
+				if(player != null){
+					if(upPressed)
+						player.moveY("up");
+					if(downPressed)
+						player.moveY("down");
+					if(leftPressed)
+						player.moveX("left");
+					if(rightPressed)
+						player.moveX("right");
+					//System.out.println("X: " + player.x + "  Y: " + player.y);
+					player.step(delta, currentRoom.getTileMatrix());
+					player.draw(g);
+				}
+			}
 			
-			if(testRoom != null){
-				testRoom.draw(g);
-			}
-			if(testPlayer != null){
-				if(upPressed)
-					testPlayer.moveY("up");
-				if(downPressed)
-					testPlayer.moveY("down");
-				if(leftPressed)
-					testPlayer.moveX("left");
-				if(rightPressed)
-					testPlayer.moveX("right");
-				testPlayer.step(delta, testRoom.getTileMatrix());
-				testPlayer.draw(g);
-			}
+			
+			
 			
 			
 			// On se debarasse du Graphics2D pour liberer les ressources 
@@ -201,11 +203,11 @@ public class Game extends Canvas {
 
 	private class KeyInputHandler extends KeyAdapter {
 		// Nombre de touches
-		private int pressCount = 1;
+		private int pressCount = 0;
 		
 		public void keyPressed(KeyEvent e) {
 			// On saute les keyPressed si on attend d'appuyer sur un bouton
-			if (waitingForKeyPress) {
+			if (gameState == "Init") {
 				return;
 			}
 			else{
@@ -226,7 +228,7 @@ public class Game extends Canvas {
 		
 		public void keyReleased(KeyEvent e) {
 			// On saute les keyReleased si on attend d'appuyer sur un bouton
-			if (waitingForKeyPress) {
+			if (gameState == "Init") {
 				return;
 			}
 			else{
@@ -247,11 +249,10 @@ public class Game extends Canvas {
 
 		public void keyTyped(KeyEvent e) {
 
-			if (waitingForKeyPress) {
-				if (pressCount == 1) {
-					waitingForKeyPress = false;
-					pressCount = 0;
-					//changeRes(1024,768);
+			if (gameState == "Init") {
+				if (pressCount == 0) {
+					pressCount++;
+					message = "Please wait, now loading..";
 					init();
 				} 
 				else {

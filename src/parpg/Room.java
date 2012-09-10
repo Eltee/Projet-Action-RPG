@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Hashtable;
 
 public class Room {
 	private String name;
@@ -44,7 +45,9 @@ public class Room {
 	 26 = Coin haut-droit TL
 	 27 = Coin haut-droit BL
 	 */
-	//private ArrayList spawnList; //La liste d'entitées à spawner dans la salle
+	private Hashtable<String, Entity> entities = new Hashtable<String, Entity>();
+	private PlayerEntity player;
+
 	private Tileset tileset;
 	
 	//Constructeur par défaut, salle vide. (Pour le test, la salle ne sera pas juste vide.)
@@ -85,6 +88,18 @@ public class Room {
 		this.height = tileMatrix.length;
 		this.tileMatrix = tileMatrix;
 	}
+
+	public PlayerEntity getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(PlayerEntity player) {
+		this.player = player;
+	}
+
+	public Hashtable<String, Entity> getEntities() {
+		return entities;
+	}
 	
 	public int[][] getTileMatrix() {
 		return tileMatrix;
@@ -100,6 +115,21 @@ public class Room {
 				tileset.draw(g, "" + tileMatrix[i][j], left+(j*32), top+(i*32));
 			}
 		}
+	}
+	
+	public int[] getTileXY(int[] tile){
+		int top = 96 + (32 * (21 - height) / 2); //176
+		int left = 0 + (32 * (32 - width) / 2); //224
+		
+		int x = tile[0]; //8
+		int y = tile[1]; //4
+		
+		int[] tileXY = new int[2];
+		
+		tileXY[0] = (x * 32) + left;
+		tileXY[1] = (y * 32) + top;
+		
+		return tileXY;
 	}
 	
 	private void fail(String message) { 
